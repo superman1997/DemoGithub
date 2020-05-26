@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head"></head>
+<nav th:replace="layout :: navbar"></nav>
+<body>
+<div class="container mt-5">
+    <div class="row form-center">
+        <div class="col-md-6">
+            <p class="card-text">Điền thông tin</p>
+            <div class="m-3">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" name="inlineRadioOptions" type="radio" id="registered" value="registered" checked="checked">
+                    <label class="form-check-label" for="registered">Đã đăng kí thông tin</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" name="inlineRadioOptions" type="radio" id="notRegistered" value="notRegistered">
+                    <label class="form-check-label" for="notRegistered">Chưa đăng kí thông tin</label>
+                </div>
+            </div>
+            <div class="form-inline">
+                <input id="inputDefault" maxlength="15" class="form-control mr-sm-2" placeholder="Mã số bảo hiểm xã hội">
+                <button id="btnCal" class="btn btn-outline-success my-2 my-sm-0">Tính</button>
+            </div>
+        </div>
+        <div class="col-md-6">
+           <p id="result">Phí đóng bảo hiểm xã hội : </p>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/bootstrap/js/jquery-3.3.1.slim.min.js}"></script>
+<script type="text/javascript" th:src="@{/bootstrap/js/popper.min.js}"></script>
+<script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/bootstrap/js/numeral.min.js}"></script>
+<script type="text/javascript" th:src="@{/bootstrap/js/cleave.js}"></script>
+<script type="text/javascript" charset="UTF-8">
+    $('#inputDefault').focus();
+    numeral.register('locale', 'vi', {
+        delimiters: {
+            thousands: '.',
+            decimal: ','
+        },
+        abbreviations: {
+            thousand: ' nghìn',
+            million: ' triệu',
+            billion: ' tỷ',
+            trillion: ' nghìn tỷ'
+        },
+        ordinal: function () {
+            return '.';
+        },
+        currency: {
+            symbol: '₫'
+        }
+    });
+    numeral.locale('vi');
+    var c = new Cleave('#inputDefault', {
+        numeral:true,
+        numericOnly : true,
+        delimiter: '',
+        numeralDecimalScale: 0
+    });
+    $("input[name='inlineRadioOptions']").change(function(e){
+        if ($(this).val() === 'registered') {
+            if (c !== undefined) {
+                c.destroy();
+            }
+            c = new Cleave('#inputDefault', {
+                numeral:true,
+                numericOnly : true,
+                delimiter: '',
+                numeralDecimalScale: 0
+            });
+            $("input#inputDefault").attr('placeholder', 'Mã số bảo hiểm xã hội');
+            $("input#inputDefault").val("");
+        } else {
+            if (c !== undefined) {
+                c.destroy();
+            }
+            c = new Cleave('#inputDefault', {
+                numeral: true,
+                numeralDecimalMark: ',',
+                delimiter: '.',
+                numeralPositiveOnly: true
+            });
+            $("input#inputDefault").val("");
+            $("input#inputDefault").attr('placeholder', 'Lương');
+        }
+    });
+    $('#btnCal').on('click', function () {
+        var per = 0.08;
+        var result = "Phí đóng bảo hiểm xã hội : ";
+        var currency = " VNĐ";
+        var radioValue = $("input[name='inlineRadioOptions']:checked").val();
+        var wage = $("input#inputDefault").val();
+        if(radioValue === 'notRegistered'){
+            var r = per * (numeral(wage).value());
+            $('#result').text(result + numeral(r).format('0,0') + currency);
+        } else {
+            var search = $("#inputDefault").val();
+            var url = "/api/worker/calculator?ms="+search;
+            $.ajax({
+                url : url,
+                success : function (data) {
+                    if (data === '') alert("Ko tìm thấy mã bảo hiểm");
+                    else $('#result').text(result + numeral(data).format('0,0') + currency);
+                }
+            });
+        }
+    });
+</script>
+</html>

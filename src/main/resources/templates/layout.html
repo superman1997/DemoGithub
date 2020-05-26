@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+<head th:fragment="head">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Bảo hiểm xã hội</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/custom.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap-select/css/bootstrap-select.min.css}">
+    <link th:href="@{/bootstrap-datepicker/css/bootstrap-datepicker3.min.css}" rel="stylesheet">
+</head>
+<nav th:fragment="navbar"  class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">BHXH</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/' ? 'active' : '' }">
+                <a class="nav-link" th:href="@{/}">Trang chủ <span class="sr-only">(current)</span></a>
+            </li>
+            <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/qlinfo' ? 'active' : ''}">
+                <a class="nav-link" th:href="@{/qlinfo}">Cập nhật hồ sơ</a>
+            </li>
+            <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/registration' ? 'active' : ''}">
+                <a class="nav-link" th:href="@{/registration}">Tạo mới đăng kí</a>
+            </li>
+            <li class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/info' ? 'active' : ''}">
+                <a class="nav-link" th:href="@{/info}">Tính phí BHXH</a>
+            </li>
+            <!--<li class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/calculatefee' ? 'active' : ''}">-->
+                <!--<a class="nav-link" th:href="@{/calculatefee}">Tính phí BHXH</a>-->
+            <!--</li>-->
+            <li sec:authorize="isAnonymous()" class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/login' ? 'active' : ''}">
+                <a class="nav-link" th:href="@{/login}">Đăng nhập</a>
+            </li>
+            <li sec:authorize="!isAnonymous()" class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/logout' ? 'active' : ''}">
+                <form id="logoutForm" action="#" th:action="@{/logout}" method="POST">
+                    <a class="nav-link" href="#" onclick="document.getElementById('logoutForm').submit()">Đăng xuất</a>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+</html>

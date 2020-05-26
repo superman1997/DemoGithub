@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout :: head"></head>
+<nav th:replace="layout :: navbar"></nav>
+<body>
+    <div class="container-fluid">
+        <h1 class="text-center mt-5">Trang chủ</h1>
+        <div sec:authorize="hasRole('ROLE_ADMIN')" class="row form-center mt-5">
+            <div class="col-sm-6">
+                    <h5 class="card-title">Đăng kí thông tin tham gia bảo hiểm</h5>
+                    <a th:href="@{/registration}" class="btn btn-primary">Đăng kí</a>
+            </div>
+            <div class="col-sm-6">
+                    <h5 class="card-title">Cập nhật hồ sơ</h5>
+                    <p class="card-text">Nhập mã số bảo hiểm xã  hoặc CMND</p>
+                    <div class="form-inline">
+                        <input id="inputDefault" maxlength="15" pattern="[0-9]+" class="form-control mr-sm-2" placeholder="Số BHXH hoặc CMND">
+                        <a id="btnFind" class="btn btn-primary">Tìm</a>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{/bootstrap/js/jquery-3.3.1.slim.min.js}"></script>
+    <script type="text/javascript" th:src="@{/bootstrap/js/popper.min.js}"></script>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <script>
+        var baseUrl = "/qlinfo/";
+        $('#inputDefault').on('input', function() {
+            var id = $('#inputDefault').val();
+            if (id !== "") $('#btnFind').attr('href', baseUrl+id);
+            // else alert("Vui lòng nhập mã số hoặc số CMND")
+        });
+    </script>
+</body>
+</html>

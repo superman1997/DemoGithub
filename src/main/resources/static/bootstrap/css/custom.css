@@ -1,0 +1,14 @@
+.form-center {
+    margin: auto;
+    width: 75% !important;
+    padding: 10px;
+}
+.equal {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+}
+/*body { padding-top: 40px; }*/
+/*@media screen and (max-width: 768px) {*/
+    /*body { padding-top: 0; }*/
+/*}*/

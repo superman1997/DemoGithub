@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head"></head>
+<nav th:replace="layout :: navbar"></nav>
+<body>
+<div class="container-fluid">
+    <h1 class="text-center mt-5 mb-3">Thông tin đăng kí</h1>
+    <div class="input-group mb-3 form-center">
+        <input id="search" type="text" pattern="[0-9]+" maxlength="15" class="form-control" placeholder="Số CMND hoặc MSBH" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+            <button id="action" class="btn btn-primary" type="button">Tìm</button>
+        </div>
+    </div>
+    <div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Họ và tên</th>
+                <th>Ngày sinh</th>
+                <th>Số BHXH</th>
+                <th>Loại BH</th>
+                <th>Số CMND</th>
+                <th>Nơi làm việc</th>
+                <th>Vùng</th>
+                <th>Lương(VNĐ)</th>
+                <th>Phụ cấp(VNĐ)</th>
+                <th>Hỗ trợ(VNĐ)</th>
+                <th>Phí BHXH(VNĐ)</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/bootstrap/js/jquery-3.3.1.slim.min.js}"></script>
+<script type="text/javascript" th:src="@{/bootstrap/js/popper.min.js}"></script>
+<script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/bootstrap/js/numeral.min.js}"></script>
+<script>
+    $(document).ready(function(){
+        numeral.register('locale', 'vi', {
+            delimiters: {
+                thousands: '.',
+                decimal: ','
+            },
+            abbreviations: {
+                thousand: ' nghìn',
+                million: ' triệu',
+                billion: ' tỷ',
+                trillion: ' nghìn tỷ'
+            },
+            ordinal: function () {
+                return '.';
+            },
+            currency: {
+                symbol: '₫'
+            }
+        });
+        numeral.locale('vi');
+        var lastSearch = "";
+        $("#action").click(function(){
+            var search = $("#search").val();
+            if (search === "") alert("Vui lòng nhập MSBH hoặc CMT");
+            else {
+                var url = "/api/worker/info/"+search;
+                $.ajax({
+                    url : url,
+                    success : function (data) {
+                        $("table tbody").find('td').each(function(){
+                            $(this).parents("tr").remove();
+                        });
+                        if (data === "") alert("Không tìm thấy thông tin")
+                        else {
+                            var zone = data["zone"];
+                            var sal = parseFloat(data["salary"]) + parseFloat(data["pc"]);
+                            var fee = 0;
+                            if (zone === 1 && sal >= 4180000) {
+                                fee = sal * 0.08;
+                            }
+                            else if (zone === 2 && sal >= 3710000) {
+                                fee = sal * 0.08;
+                            }
+                            else if (zone === 3 && sal >= 3250000) {
+                                fee = sal * 0.08;
+                            }
+                            else if (zone === 4 && sal >= 2920000) {
+                                fee = sal * 0.08;
+                            }
+                            else fee = 0;
+                            const MAX_SAL = 27800000;
+                            if (sal >= MAX_SAL) fee = MAX_SAL * 0.08;
+                            var typeInt = data["type"];
+                            var type;
+                            if (typeInt == 1) {
+                                type = "Bắt buộc";
+                            }
+                            else {
+                                type = "Tự nguyện";
+                            }
+                            var markup =
+                                "<tr><td>"
+                                + data["fullName"]
+                                + "</td><td>"
+                                + data["birthDate"]
+                                + "</td><td>"
+                                + data["msbh"]
+                                + "</td><td>"
+                                + type
+                                + "</td><td>"
+                                + data["identityNumber"]
+                                + "</td><td>"
+                                + data["workplace"]
+                                + "</td><td>"
+                                + zone
+                                + "</td><td>"
+                                + numeral(data["salary"]).format('0,0')
+                                + "</td><td>"
+                                + numeral(data["pc"]).format('0,0')
+                                + "</td><td>"
+                                + numeral(data["ht"]).format('0,0')
+                                + "</td><td>"
+                                + numeral(data["fee"]).format('0,0')
+                                + "</td>/tr>";
+                            $("table tbody").append(markup);
+                        }
+                    }
+                });
+            }
+        });
+        $('#search').focus();
+    });
+</script>
+</html>
