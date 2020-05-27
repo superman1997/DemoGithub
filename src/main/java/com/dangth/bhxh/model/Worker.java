@@ -46,6 +46,7 @@ public class Worker implements Serializable {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
+<<<<<<< HEAD
 // Sửa file này,toi roi :))
 
 }
